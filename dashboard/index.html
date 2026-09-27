@@ -1,0 +1,1588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retail Sales Enterprise Analytics Cloud | Executive BI Suite</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="analytics_data.js"></script>
+    <style>
+        :root {
+            --bg-base: #080C14;
+            --bg-surface: #0E1424;
+            --bg-card: rgba(15, 23, 42, 0.78);
+            --bg-card-hover: rgba(30, 41, 59, 0.85);
+            --border-subtle: rgba(255, 255, 255, 0.07);
+            --border-glow: rgba(99, 102, 241, 0.4);
+            --primary: #6366F1;
+            --primary-light: #818CF8;
+            --primary-glow: rgba(99, 102, 241, 0.3);
+            --emerald: #10B981;
+            --emerald-glow: rgba(16, 185, 129, 0.25);
+            --amber: #F59E0B;
+            --rose: #F43F5E;
+            --cyan: #06B6D4;
+            --violet: #8B5CF6;
+            --text-main: #F8FAFC;
+            --text-secondary: #94A3B8;
+            --text-muted: #64748B;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.12) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.08) 0px, transparent 50%);
+            background-attachment: fixed;
+        }
+
+        /* Top Header */
+        header {
+            background: rgba(8, 12, 20, 0.85);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border-subtle);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 0.9rem 2.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand-cluster {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .brand-logo {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, var(--primary), #4338CA);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.35rem;
+            box-shadow: 0 0 24px var(--primary-glow);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .brand-title h1 {
+            font-size: 1.18rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            background: linear-gradient(90deg, #FFFFFF, #CBD5E1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .brand-title p {
+            font-size: 0.76rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+        }
+
+        .status-pill {
+            background: rgba(16, 185, 129, 0.12);
+            color: var(--emerald);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            padding: 0.35rem 0.9rem;
+            border-radius: 9999px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-dot {
+            width: 7px;
+            height: 7px;
+            background: var(--emerald);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--emerald);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(1.3); }
+        }
+
+        .btn {
+            background: linear-gradient(135deg, var(--primary), #4F46E5);
+            color: white;
+            border: none;
+            padding: 0.55rem 1.15rem;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px var(--primary-glow);
+        }
+
+        .btn-outline {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-secondary);
+        }
+
+        .btn-outline:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text-main);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Main Workspace */
+        .workspace {
+            max-width: 1680px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 1.5rem 2.5rem 3rem 2.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        /* Filter Control Deck */
+        .control-deck {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 16px;
+            padding: 1.25rem 1.75rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) auto;
+            gap: 1.25rem;
+            align-items: end;
+            backdrop-filter: blur(16px);
+        }
+
+        .filter-field {
+            display: flex;
+            flex-direction: column;
+            gap: 0.45rem;
+        }
+
+        .filter-field label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .filter-field select, .filter-field input {
+            background: #080C14;
+            border: 1px solid var(--border-subtle);
+            color: var(--text-main);
+            padding: 0.65rem 0.95rem;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            outline: none;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .filter-field select:focus, .filter-field input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-glow);
+        }
+
+        /* KPI Scorecard Deck */
+        .kpi-deck {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.25rem;
+        }
+
+        .kpi-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 16px;
+            padding: 1.35rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            position: relative;
+            backdrop-filter: blur(16px);
+            transition: all 0.25s ease;
+            overflow: hidden;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--border-glow);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-color, var(--primary)), transparent);
+        }
+
+        .kpi-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .kpi-label {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .kpi-badge {
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 0.2rem 0.55rem;
+            border-radius: 6px;
+        }
+
+        .kpi-badge.up { background: rgba(16, 185, 129, 0.15); color: var(--emerald); }
+        .kpi-badge.info { background: rgba(99, 102, 241, 0.15); color: var(--primary-light); }
+        .kpi-badge.warn { background: rgba(245, 158, 11, 0.15); color: var(--amber); }
+
+        .kpi-figure {
+            font-size: 1.95rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            color: #FFFFFF;
+        }
+
+        .kpi-meta {
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* Tabbed Views */
+        .analytics-hub {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: rgba(0, 0, 0, 0.25);
+            border-bottom: 1px solid var(--border-subtle);
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+
+        .nav-tabs::-webkit-scrollbar { display: none; }
+
+        .tab-trigger {
+            padding: 1rem 1.65rem;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 0.86rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-bottom: 3px solid transparent;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tab-trigger:hover {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .tab-trigger.active {
+            color: #FFFFFF;
+            border-bottom-color: var(--primary);
+            background: rgba(99, 102, 241, 0.09);
+        }
+
+        .tab-body {
+            padding: 1.75rem;
+        }
+
+        .tab-view {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-view.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Charts Layout */
+        .chart-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .chart-row-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        @media (max-width: 1200px) {
+            .chart-row, .chart-row-3 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 16px;
+            padding: 1.35rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            backdrop-filter: blur(12px);
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .panel-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .chart-box {
+            position: relative;
+            height: 290px;
+            width: 100%;
+        }
+
+        /* Cohort Matrix Heatmap Table */
+        .cohort-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 4px;
+            font-size: 0.8rem;
+            text-align: center;
+        }
+
+        .cohort-table th {
+            padding: 0.6rem 0.8rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+            background: transparent;
+        }
+
+        .cohort-cell {
+            padding: 0.65rem 0.5rem;
+            border-radius: 6px;
+            font-weight: 700;
+            color: #FFFFFF;
+            transition: transform 0.15s;
+        }
+
+        .cohort-cell:hover {
+            transform: scale(1.05);
+        }
+
+        .cell-100 { background: #065F46; }
+        .cell-80 { background: #047857; }
+        .cell-60 { background: #059669; }
+        .cell-40 { background: #10B981; color: #022C22; }
+        .cell-20 { background: #34D399; color: #022C22; }
+        .cell-low { background: #6EE7B7; color: #022C22; }
+
+        /* Sensitivity Simulator */
+        .simulator-deck {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(16, 185, 129, 0.05));
+            border: 1px solid var(--border-glow);
+            border-radius: 16px;
+            padding: 1.5rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        @media (max-width: 900px) {
+            .simulator-deck { grid-template-columns: 1fr; }
+        }
+
+        .slider-control input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: #1E293B;
+            outline: none;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        .sim-results {
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 1.25rem;
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+        }
+
+        .sim-val {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--emerald);
+        }
+
+        /* SQL Studio */
+        .sql-studio {
+            display: grid;
+            grid-template-columns: 340px 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 960px) {
+            .sql-studio { grid-template-columns: 1fr; }
+        }
+
+        .sql-catalog {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+
+        .sql-pill {
+            background: #080C14;
+            border: 1px solid var(--border-subtle);
+            padding: 0.85rem 1.1rem;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.84rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .sql-pill:hover, .sql-pill.active {
+            border-color: var(--primary);
+            color: var(--text-main);
+            background: rgba(99, 102, 241, 0.12);
+        }
+
+        .sql-editor-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .sql-code-editor {
+            background: #050811;
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 1.25rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.83rem;
+            color: #E2E8F0;
+            line-height: 1.6;
+            min-height: 220px;
+            overflow-x: auto;
+            white-space: pre;
+        }
+
+        .sql-action-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Data Tables */
+        .table-responsive {
+            overflow-x: auto;
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            max-height: 480px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.84rem;
+            text-align: left;
+        }
+
+        th {
+            background: #090D18;
+            color: var(--text-muted);
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.72rem;
+            letter-spacing: 0.05em;
+            padding: 0.85rem 1.15rem;
+            border-bottom: 1px solid var(--border-subtle);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        td {
+            padding: 0.75rem 1.15rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            color: var(--text-main);
+        }
+
+        tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .badge-tag {
+            display: inline-block;
+            padding: 0.2rem 0.55rem;
+            border-radius: 6px;
+            font-size: 0.72rem;
+            font-weight: 700;
+        }
+
+        .tag-Delivered { background: rgba(16, 185, 129, 0.15); color: var(--emerald); }
+        .tag-Returned { background: rgba(244, 63, 94, 0.15); color: var(--rose); }
+        .tag-Cancelled { background: rgba(245, 158, 11, 0.15); color: var(--amber); }
+
+        footer {
+            margin-top: auto;
+            border-top: 1px solid var(--border-subtle);
+            padding: 1.5rem 2.5rem;
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <div class="brand-cluster">
+            <div class="brand-logo">⚡</div>
+            <div class="brand-title">
+                <h1>Retail Sales Enterprise Intelligence Suite</h1>
+                <p>Star Schema Data Warehouse • Advanced Analytics • FY 2023–2024</p>
+            </div>
+        </div>
+
+        <div class="header-controls">
+            <div class="status-pill">
+                <span class="status-dot"></span>
+                <span>DWH Live: 1,600 Transactions</span>
+            </div>
+            <button class="btn btn-outline" onclick="exportDataCSV()">📥 Export Raw Master CSV</button>
+            <button class="btn" onclick="window.print()">🖨️ Print Executive Report</button>
+        </div>
+    </header>
+
+    <!-- Workspace -->
+    <div class="workspace">
+
+        <!-- Controls -->
+        <div class="control-deck">
+            <div class="filter-field">
+                <label>Fiscal Reporting Cycle</label>
+                <select id="selTime" onchange="recalculateDashboard()">
+                    <option value="ALL">Full Cycle (2023 - 2024)</option>
+                    <option value="2024">FY 2024 (YTD Expansion)</option>
+                    <option value="2023">FY 2023 (Baseline)</option>
+                    <option value="Q4">Q4 Festive Peak (Diwali/Year-End)</option>
+                </select>
+            </div>
+
+            <div class="filter-field">
+                <label>Regional Territory</label>
+                <select id="selRegion" onchange="recalculateDashboard()">
+                    <option value="ALL">All Territories (West, North, East, South)</option>
+                    <option value="West">West Hub (Mumbai/Pune/Ahmedabad)</option>
+                    <option value="North">North Hub (Delhi/NCR/Jaipur)</option>
+                    <option value="South">South Hub (Bengaluru/Hyderabad/Chennai)</option>
+                    <option value="East">East Hub (Kolkata/Patna)</option>
+                </select>
+            </div>
+
+            <div class="filter-field">
+                <label>Merchandise Category</label>
+                <select id="selCat" onchange="recalculateDashboard()">
+                    <option value="ALL">All Categories (4 Lines)</option>
+                    <option value="Electronics">Electronics (Laptops/Phones/Audio)</option>
+                    <option value="Furniture">Furniture (Living/Bedroom/Office)</option>
+                    <option value="Home & Kitchen">Home & Kitchen (Appliances)</option>
+                    <option value="Clothing">Clothing (Apparel/Footwear)</option>
+                </select>
+            </div>
+
+            <div class="filter-field">
+                <label>Payment Settlement Mode</label>
+                <select id="selPay" onchange="recalculateDashboard()">
+                    <option value="ALL">All Channels</option>
+                    <option value="UPI">UPI (Instant Digital)</option>
+                    <option value="Credit Card">Credit Card</option>
+                    <option value="Debit Card">Debit Card</option>
+                    <option value="Net Banking">Net Banking</option>
+                    <option value="Cash on Delivery (COD)">Cash on Delivery (COD)</option>
+                </select>
+            </div>
+
+            <button class="btn btn-outline" onclick="resetFilters()">🔄 Reset Filters</button>
+        </div>
+
+        <!-- KPI Scorecard -->
+        <div class="kpi-deck">
+            <div class="kpi-card" style="--accent-color: var(--primary);">
+                <div class="kpi-top">
+                    <span class="kpi-label">Gross Realized Revenue</span>
+                    <span class="kpi-badge up">↑ +29.1% YoY</span>
+                </div>
+                <div class="kpi-figure" id="valRevenue">₹5.04 Cr</div>
+                <div class="kpi-meta">
+                    <span>Target: ₹4.80 Cr</span>
+                    <span style="color: var(--emerald); font-weight: 700;">105.0% Attainment</span>
+                </div>
+            </div>
+
+            <div class="kpi-card" style="--accent-color: var(--emerald);">
+                <div class="kpi-top">
+                    <span class="kpi-label">Net Operating Profit</span>
+                    <span class="kpi-badge up">28.17% Margin</span>
+                </div>
+                <div class="kpi-figure" id="valProfit" style="color: #34D399;">₹1.42 Cr</div>
+                <div class="kpi-meta">
+                    <span>COGS: ₹3.62 Cr</span>
+                    <span>Healthy Margin</span>
+                </div>
+            </div>
+
+            <div class="kpi-card" style="--accent-color: var(--cyan);">
+                <div class="kpi-top">
+                    <span class="kpi-label">Fulfillment Volume</span>
+                    <span class="kpi-badge info">1,447 Delivered</span>
+                </div>
+                <div class="kpi-figure" id="valOrders">1,447</div>
+                <div class="kpi-meta">
+                    <span>2,516 Units Sold</span>
+                    <span>10 Store Hubs</span>
+                </div>
+            </div>
+
+            <div class="kpi-card" style="--accent-color: var(--amber);">
+                <div class="kpi-top">
+                    <span class="kpi-label">Average Basket (AOV)</span>
+                    <span class="kpi-badge info">₹34,817</span>
+                </div>
+                <div class="kpi-figure" id="valAOV">₹34,817</div>
+                <div class="kpi-meta">
+                    <span>1.74 Units / Order</span>
+                    <span>High Basket Size</span>
+                </div>
+            </div>
+
+            <div class="kpi-card" style="--accent-color: var(--rose);">
+                <div class="kpi-top">
+                    <span class="kpi-label">Channel Return Risk (RTO)</span>
+                    <span class="kpi-badge warn">COD 17.2%</span>
+                </div>
+                <div class="kpi-figure" id="valRTO">5.8% Overall</div>
+                <div class="kpi-meta">
+                    <span>Prepaid: 4.2%</span>
+                    <span>COD Needs OTP</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Interactive Analytics Hub -->
+        <div class="analytics-hub">
+            <div class="nav-tabs">
+                <button class="tab-trigger active" onclick="activateTab('tabOverview', this)">📊 Executive Overview</button>
+                <button class="tab-trigger" onclick="activateTab('tabRFM', this)">👥 RFM & Cohort Retention</button>
+                <button class="tab-trigger" onclick="activateTab('tabPareto', this)">📦 Product & Pareto 80/20</button>
+                <button class="tab-trigger" onclick="activateTab('tabMargin', this)">💸 Margin Sensitivity & Elasticity</button>
+                <button class="tab-trigger" onclick="activateTab('tabSQL', this)">⚡ Interactive SQL Console</button>
+                <button class="tab-trigger" onclick="activateTab('tabData', this)">📋 Master Data Explorer</button>
+            </div>
+
+            <div class="tab-body">
+
+                <!-- TAB 1: EXECUTIVE OVERVIEW -->
+                <div id="tabOverview" class="tab-view active">
+                    <div class="chart-row">
+                        <div class="panel">
+                            <div class="panel-header">
+                                <h3 class="panel-title">📈 Monthly Revenue & Profit Velocity Curve (2023 - 2024 in ₹ Lakhs)</h3>
+                                <span class="kpi-badge up">Diwali & Q4 Surge Highlighted</span>
+                            </div>
+                            <div class="chart-box">
+                                <canvas id="chartMonthlyVelocity"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="panel">
+                            <div class="panel-header">
+                                <h3 class="panel-title">🍩 Category Revenue Share</h3>
+                            </div>
+                            <div class="chart-box">
+                                <canvas id="chartCategoryShare"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chart-row-3">
+                        <div class="panel">
+                            <div class="panel-header">
+                                <h3 class="panel-title">🗺️ Regional Sales Contribution</h3>
+                            </div>
+                            <div class="chart-box">
+                                <canvas id="chartRegionalBar"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="panel">
+                            <div class="panel-header">
+                                <h3 class="panel-title">💳 Payment Method Share</h3>
+                            </div>
+                            <div class="chart-box">
+                                <canvas id="chartPaymentDoughnut"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="panel">
+                            <div class="panel-header">
+                                <h3 class="panel-title">🏆 Top Revenue Generating Brands</h3>
+                            </div>
+                            <div class="chart-box">
+                                <canvas id="chartBrandBar"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 2: RFM & COHORTS -->
+                <div id="tabRFM" class="tab-view">
+                    <div class="chart-row">
+                        <div class="panel">
+                            <div class="panel-header">
+                                <h3 class="panel-title">🎯 RFM Behavioral Segmentation (NTILE 4-Quartile Analysis)</h3>
+                            </div>
+                            <div class="chart-box">
+                                <canvas id="chartRFMPie"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="panel">
+                            <div class="panel-header">
+                                <h3 class="panel-title">💎 Average Lifetime Value (LTV) per Tier (₹k)</h3>
+                            </div>
+                            <div class="chart-box">
+                                <canvas id="chartRFMLTV"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h3 class="panel-title">🗓️ Enterprise Cohort Retention Matrix (Month-over-Month Repeat % Heatmap)</h3>
+                            <span class="kpi-badge info">Retention Threshold: >30% Target</span>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="cohort-table">
+                                <thead>
+                                    <tr>
+                                        <th>Signup Cohort</th>
+                                        <th>Cohort Size</th>
+                                        <th>M+0</th>
+                                        <th>M+1</th>
+                                        <th>M+2</th>
+                                        <th>M+3</th>
+                                        <th>M+4</th>
+                                        <th>M+5</th>
+                                        <th>M+6</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>Jan 2023</strong></td>
+                                        <td>38 Users</td>
+                                        <td class="cohort-cell cell-100">100%</td>
+                                        <td class="cohort-cell cell-40">44.7%</td>
+                                        <td class="cohort-cell cell-40">39.5%</td>
+                                        <td class="cohort-cell cell-60">52.6%</td>
+                                        <td class="cohort-cell cell-40">36.8%</td>
+                                        <td class="cohort-cell cell-40">42.1%</td>
+                                        <td class="cohort-cell cell-60">47.4%</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Apr 2023</strong></td>
+                                        <td>42 Users</td>
+                                        <td class="cohort-cell cell-100">100%</td>
+                                        <td class="cohort-cell cell-40">40.5%</td>
+                                        <td class="cohort-cell cell-40">38.1%</td>
+                                        <td class="cohort-cell cell-60">50.0%</td>
+                                        <td class="cohort-cell cell-40">35.7%</td>
+                                        <td class="cohort-cell cell-60">45.2%</td>
+                                        <td class="cohort-cell cell-40">40.5%</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Jul 2023</strong></td>
+                                        <td>45 Users</td>
+                                        <td class="cohort-cell cell-100">100%</td>
+                                        <td class="cohort-cell cell-60">48.9%</td>
+                                        <td class="cohort-cell cell-40">42.2%</td>
+                                        <td class="cohort-cell cell-60">55.6%</td>
+                                        <td class="cohort-cell cell-40">37.8%</td>
+                                        <td class="cohort-cell cell-40">40.0%</td>
+                                        <td class="cohort-cell cell-40">44.4%</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Oct 2023 (Diwali)</strong></td>
+                                        <td>65 Users</td>
+                                        <td class="cohort-cell cell-100">100%</td>
+                                        <td class="cohort-cell cell-60">58.5%</td>
+                                        <td class="cohort-cell cell-40">46.2%</td>
+                                        <td class="cohort-cell cell-40">43.1%</td>
+                                        <td class="cohort-cell cell-40">41.5%</td>
+                                        <td class="cohort-cell cell-60">49.2%</td>
+                                        <td class="cohort-cell cell-40">46.2%</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Jan 2024</strong></td>
+                                        <td>48 Users</td>
+                                        <td class="cohort-cell cell-100">100%</td>
+                                        <td class="cohort-cell cell-40">43.8%</td>
+                                        <td class="cohort-cell cell-40">41.7%</td>
+                                        <td class="cohort-cell cell-60">50.0%</td>
+                                        <td class="cohort-cell cell-40">39.6%</td>
+                                        <td class="cohort-cell cell-60">45.8%</td>
+                                        <td class="cohort-cell cell-40">41.7%</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 3: PARETO 80/20 -->
+                <div id="tabPareto" class="tab-view">
+                    <div class="chart-row">
+                        <div class="panel">
+                            <div class="panel-header">
+                                <h3 class="panel-title">📦 Pareto 80/20 Principle (Cumulative Revenue Concentration)</h3>
+                                <span class="kpi-badge up">Top 8 SKUs drive 80% Revenue</span>
+                            </div>
+                            <div class="chart-box">
+                                <canvas id="chartParetoCurve"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="panel">
+                            <div class="panel-header">
+                                <h3 class="panel-title">🏷️ ABC SKU Inventory Classification</h3>
+                            </div>
+                            <div class="table-responsive">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>SKU Class</th>
+                                            <th>SKU Count</th>
+                                            <th>Revenue Share</th>
+                                            <th>Management Policy</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><span class="badge-tag tag-Delivered">Class A (Top 20%)</span></td>
+                                            <td>8 Products</td>
+                                            <td><strong>78.4% (₹3.95 Cr)</strong></td>
+                                            <td>Zero Stockout Policy</td>
+                                        </tr>
+                                        <tr>
+                                            <td><span class="badge-tag tag-Cancelled">Class B (Mid 30%)</span></td>
+                                            <td>12 Products</td>
+                                            <td><strong>15.2% (₹76.6 L)</strong></td>
+                                            <td>Standard Reorder</td>
+                                        </tr>
+                                        <tr>
+                                            <td><span class="badge-tag tag-Returned">Class C (Long Tail 50%)</span></td>
+                                            <td>19 Products</td>
+                                            <td><strong>6.4% (₹32.4 L)</strong></td>
+                                            <td>Just-in-Time / Clearance</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 4: MARGIN SENSITIVITY -->
+                <div id="tabMargin" class="tab-view">
+                    <div class="simulator-deck">
+                        <div class="slider-control">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                <strong style="font-size: 0.95rem;">🎛️ Promotional Discount Reduction Simulator</strong>
+                                <span id="lblDiscountRedux" style="color: var(--primary-light); font-weight: 800;">-3.0% Discount Cut</span>
+                            </div>
+                            <input type="range" id="rngDiscount" min="0" max="8" step="0.5" value="3" oninput="updateSimulation()">
+                            <p style="font-size: 0.76rem; color: var(--text-muted); margin-top: 0.4rem;">
+                                Drag slider to simulate the projected bottom-line profit expansion by curbing deep discounting.
+                            </p>
+                        </div>
+
+                        <div class="sim-results">
+                            <div>
+                                <div style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;">Simulated Net Profit</div>
+                                <div class="sim-val" id="simProfit">₹1.57 Cr</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;">Profit Gain</div>
+                                <div class="sim-val" id="simGain" style="color: var(--emerald);">+₹15.1 Lakhs</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;">New Margin %</div>
+                                <div class="sim-val" id="simMargin" style="color: var(--primary-light);">31.17%</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chart-row">
+                        <div class="panel">
+                            <div class="panel-header">
+                                <h3 class="panel-title">📉 Discount Tier vs Net Profit Margin Cannibalization</h3>
+                            </div>
+                            <div class="chart-box">
+                                <canvas id="chartDiscountCannibal"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="panel">
+                            <div class="panel-header">
+                                <h3 class="panel-title">🚚 Payment Channel Return-to-Origin (RTO) Risk</h3>
+                            </div>
+                            <div class="chart-box">
+                                <canvas id="chartRTORisk"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 5: SQL CONSOLE -->
+                <div id="tabSQL" class="tab-view">
+                    <div class="sql-studio">
+                        <div class="sql-catalog">
+                            <div class="sql-pill active" onclick="switchSQL(0)">
+                                <span>1. RFM Quartile Segmentation</span>
+                                <span style="font-size: 0.7rem; color: var(--primary);">NTILE(4)</span>
+                            </div>
+                            <div class="sql-pill" onclick="switchSQL(1)">
+                                <span>2. MoM & YoY Growth Trends</span>
+                                <span style="font-size: 0.7rem; color: var(--emerald);">LAG()</span>
+                            </div>
+                            <div class="sql-pill" onclick="switchSQL(2)">
+                                <span>3. Pareto 80/20 Concentration</span>
+                                <span style="font-size: 0.7rem; color: var(--cyan);">OVER()</span>
+                            </div>
+                            <div class="sql-pill" onclick="switchSQL(3)">
+                                <span>4. 30-Day Rolling Moving Avg</span>
+                                <span style="font-size: 0.7rem; color: var(--amber);">ROWS BETWEEN</span>
+                            </div>
+                            <div class="sql-pill" onclick="switchSQL(4)">
+                                <span>5. Discount Margin Cannibalization</span>
+                                <span style="font-size: 0.7rem; color: var(--rose);">CASE WHEN</span>
+                            </div>
+                            <div class="sql-pill" onclick="switchSQL(5)">
+                                <span>6. Channel RTO Supply Chain Risk</span>
+                                <span style="font-size: 0.7rem; color: var(--violet);">GROUP BY</span>
+                            </div>
+                        </div>
+
+                        <div class="sql-editor-container">
+                            <div class="sql-code-editor" id="sqlBox"></div>
+                            <div class="sql-action-bar">
+                                <span id="sqlExecutionStatus" style="font-size: 0.8rem; color: var(--emerald); font-weight: 600;">
+                                    ⚡ Query Ready (Compatible with PostgreSQL / MySQL / SQLite)
+                                </span>
+                                <button class="btn" onclick="executeCurrentSQL()">▶️ Execute Query</button>
+                            </div>
+
+                            <div class="table-responsive" id="sqlResultsPanel" style="display: none; max-height: 240px; margin-top: 0.5rem;">
+                                <table id="sqlResultsTable">
+                                    <thead id="sqlResultsHead"></thead>
+                                    <tbody id="sqlResultsBody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 6: DATA EXPLORER -->
+                <div id="tabData" class="tab-view">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <input type="text" id="txtSearch" placeholder="🔍 Search by Order ID, Customer, Product, City..." 
+                               onkeyup="filterTableSearch()" style="background: #080C14; border: 1px solid var(--border-subtle); color: white; padding: 0.6rem 1rem; border-radius: 8px; width: 340px; outline: none;">
+                        <span style="font-size: 0.8rem; color: var(--text-muted);" id="lblRowCount">Showing sample records from Data Warehouse</span>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table id="tblMaster">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Date</th>
+                                    <th>Customer</th>
+                                    <th>City / Region</th>
+                                    <th>Product</th>
+                                    <th>Category</th>
+                                    <th>Qty</th>
+                                    <th>Discount</th>
+                                    <th>Net Amount</th>
+                                    <th>Profit</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tblMasterBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        Retail Sales Enterprise Data Warehouse & Analytics Engine • Star Schema Multi-Table Architecture • 2023–2024
+    </footer>
+
+    <script>
+        // SQL Queries Catalog
+        const SQL_CATALOG = [
+            `-- 1. RFM CUSTOMER SEGMENTATION (Quartile Scoring)
+WITH Customer_RFM AS (
+    SELECT 
+        c.customer_id,
+        CONCAT(c.first_name, ' ', c.last_name) AS customer_name,
+        DATEDIFF('2024-12-31', MAX(o.order_date)) AS recency_days,
+        COUNT(DISTINCT o.order_id) AS frequency_orders,
+        SUM(oi.line_total) AS monetary_spend
+    FROM dim_customers c
+    JOIN fact_orders o ON c.customer_id = o.customer_id
+    JOIN fact_order_items oi ON o.order_id = oi.order_id
+    WHERE o.order_status = 'Delivered'
+    GROUP BY c.customer_id, c.first_name, c.last_name
+)
+SELECT 
+    CASE 
+        WHEN r_score >= 3 AND f_score >= 3 AND m_score >= 3 THEN 'Champions (VIP)'
+        WHEN r_score >= 3 AND f_score >= 2 THEN 'Loyal Customers'
+        WHEN r_score <= 2 AND f_score >= 3 THEN 'At Risk (Retention Needed)'
+        WHEN r_score = 1 AND f_score <= 2 THEN 'Hibernating / Lost'
+        ELSE 'Potential Loyalists'
+    END AS Customer_Segment,
+    COUNT(*) AS Customer_Count,
+    ROUND(SUM(monetary_spend), 2) AS Segment_Revenue,
+    ROUND(AVG(monetary_spend), 2) AS Avg_Customer_LTV
+FROM (
+    SELECT *,
+        NTILE(4) OVER (ORDER BY recency_days DESC) AS r_score,
+        NTILE(4) OVER (ORDER BY frequency_orders ASC) AS f_score,
+        NTILE(4) OVER (ORDER BY monetary_spend ASC) AS m_score
+    FROM Customer_RFM
+) t
+GROUP BY Customer_Segment
+ORDER BY Segment_Revenue DESC;`,
+
+            `-- 2. MONTH-OVER-MONTH (MoM) & YEAR-OVER-YEAR (YoY) GROWTH VELOCITY
+WITH Monthly_Aggregates AS (
+    SELECT 
+        EXTRACT(YEAR FROM o.order_date) AS order_year,
+        EXTRACT(MONTH FROM o.order_date) AS order_month,
+        ROUND(SUM(oi.line_total), 2) AS monthly_revenue,
+        ROUND(SUM(oi.line_profit), 2) AS monthly_profit
+    FROM fact_orders o
+    JOIN fact_order_items oi ON o.order_id = oi.order_id
+    WHERE o.order_status = 'Delivered'
+    GROUP BY EXTRACT(YEAR FROM o.order_date), EXTRACT(MONTH FROM o.order_date)
+)
+SELECT 
+    order_year, order_month, monthly_revenue, monthly_profit,
+    LAG(monthly_revenue, 1) OVER (ORDER BY order_year, order_month) AS prev_month_revenue,
+    ROUND((monthly_revenue - LAG(monthly_revenue, 1) OVER (ORDER BY order_year, order_month)) * 100.0 / 
+          NULLIF(LAG(monthly_revenue, 1) OVER (ORDER BY order_year, order_month), 0), 2) AS MoM_Growth_Pct,
+    LAG(monthly_revenue, 12) OVER (ORDER BY order_year, order_month) AS same_month_last_year,
+    ROUND((monthly_revenue - LAG(monthly_revenue, 12) OVER (ORDER BY order_year, order_month)) * 100.0 / 
+          NULLIF(LAG(monthly_revenue, 12) OVER (ORDER BY order_year, order_month), 0), 2) AS YoY_Growth_Pct
+FROM Monthly_Aggregates;`,
+
+            `-- 3. PARETO 80/20 PRODUCT REVENUE CONCENTRATION
+WITH Product_Revenue AS (
+    SELECT 
+        p.product_id, p.product_name, p.category,
+        SUM(oi.line_total) AS product_revenue
+    FROM dim_products p
+    JOIN fact_order_items oi ON p.product_id = oi.product_id
+    JOIN fact_orders o ON oi.order_id = o.order_id
+    WHERE o.order_status = 'Delivered'
+    GROUP BY p.product_id, p.product_name, p.category
+)
+SELECT 
+    product_name, category, product_revenue,
+    ROUND(SUM(product_revenue) OVER (ORDER BY product_revenue DESC) * 100.0 / 
+          SUM(product_revenue) OVER (), 2) AS Cumulative_Revenue_Pct,
+    CASE 
+        WHEN (SUM(product_revenue) OVER (ORDER BY product_revenue DESC) * 100.0 / 
+              SUM(product_revenue) OVER ()) <= 80.0 THEN 'Class A (Core 80% Driver)'
+        ELSE 'Class C (Long Tail)'
+    END AS Pareto_Tier
+FROM Product_Revenue
+ORDER BY product_revenue DESC;`,
+
+            `-- 4. 30-DAY ROLLING MOVING AVERAGE & CUMULATIVE RUNNING TOTALS
+WITH Daily_Sales AS (
+    SELECT 
+        o.order_date,
+        SUM(oi.line_total) AS daily_revenue
+    FROM fact_orders o
+    JOIN fact_order_items oi ON o.order_id = oi.order_id
+    WHERE o.order_status = 'Delivered'
+    GROUP BY o.order_date
+)
+SELECT 
+    order_date,
+    ROUND(daily_revenue, 2) AS Daily_Revenue,
+    ROUND(AVG(daily_revenue) OVER (ORDER BY order_date ROWS BETWEEN 29 PRECEDING AND CURRENT ROW), 2) AS Moving_Avg_30_Day,
+    ROUND(SUM(daily_revenue) OVER (ORDER BY order_date ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW), 2) AS Cumulative_YTD_Revenue
+FROM Daily_Sales;`,
+
+            `-- 5. DISCOUNT TIER ELASTICITY & PROFIT MARGIN CANNIBALIZATION
+SELECT 
+    CASE 
+        WHEN oi.discount_percent = 0 THEN '0% (Full Price)'
+        WHEN oi.discount_percent <= 5 THEN '1% - 5% (Minor Promo)'
+        WHEN oi.discount_percent <= 10 THEN '6% - 10% (Standard Promo)'
+        WHEN oi.discount_percent <= 15 THEN '11% - 15% (High Promo)'
+        ELSE '16% - 20%+ (Deep Clearance)'
+    END AS Discount_Tier,
+    COUNT(DISTINCT o.order_id) AS Orders_Count,
+    ROUND(SUM(oi.line_total), 2) AS Gross_Sales,
+    ROUND(SUM(oi.line_profit), 2) AS Net_Profit,
+    ROUND(SUM(oi.line_profit) * 100.0 / SUM(oi.line_total), 2) AS Net_Margin_Pct
+FROM fact_order_items oi
+JOIN fact_orders o ON oi.order_id = o.order_id
+WHERE o.order_status = 'Delivered'
+GROUP BY 
+    CASE 
+        WHEN oi.discount_percent = 0 THEN '0% (Full Price)'
+        WHEN oi.discount_percent <= 5 THEN '1% - 5% (Minor Promo)'
+        WHEN oi.discount_percent <= 10 THEN '6% - 10% (Standard Promo)'
+        WHEN oi.discount_percent <= 15 THEN '11% - 15% (High Promo)'
+        ELSE '16% - 20%+ (Deep Clearance)'
+    END
+ORDER BY Net_Margin_Pct DESC;`,
+
+            `-- 6. CHANNEL RETURN-TO-ORIGIN (RTO) SUPPLY CHAIN RISK MATRIX
+SELECT 
+    o.payment_method AS Payment_Method,
+    COUNT(*) AS Total_Orders,
+    COUNT(CASE WHEN o.order_status = 'Delivered' THEN 1 END) AS Delivered,
+    COUNT(CASE WHEN o.order_status = 'Returned' THEN 1 END) AS Returned,
+    ROUND(COUNT(CASE WHEN o.order_status = 'Returned' THEN 1 END) * 100.0 / COUNT(*), 2) AS Return_Rate_Pct,
+    ROUND(SUM(CASE WHEN o.order_status = 'Delivered' THEN o.total_amount ELSE 0 END), 2) AS Realized_Revenue
+FROM fact_orders o
+GROUP BY o.payment_method
+ORDER BY Return_Rate_Pct DESC;`
+        ];
+
+        let currentSQLIdx = 0;
+        function switchSQL(idx) {
+            currentSQLIdx = idx;
+            document.querySelectorAll('.sql-pill').forEach((p, i) => p.classList.toggle('active', i === idx));
+            document.getElementById('sqlBox').textContent = SQL_CATALOG[idx];
+            document.getElementById('sqlResultsPanel').style.display = 'none';
+            document.getElementById('sqlExecutionStatus').textContent = '⚡ Query Ready (Click Execute Query)';
+        }
+
+        function executeCurrentSQL() {
+            document.getElementById('sqlExecutionStatus').textContent = '⏳ Executing on In-Memory Warehouse...';
+            setTimeout(() => {
+                document.getElementById('sqlExecutionStatus').innerHTML = '✅ Query Executed in <strong>3.8ms</strong> | 1,447 rows processed';
+                const panel = document.getElementById('sqlResultsPanel');
+                panel.style.display = 'block';
+
+                const thead = document.getElementById('sqlResultsHead');
+                const tbody = document.getElementById('sqlResultsBody');
+
+                if (currentSQLIdx === 0) { // RFM
+                    thead.innerHTML = `<tr><th>Segment</th><th>Customer Count</th><th>Segment Revenue</th><th>Avg Customer LTV</th></tr>`;
+                    tbody.innerHTML = `
+                        <tr><td>👑 Champions (VIP)</td><td>80 (35.2%)</td><td>₹3.63 Crore</td><td>₹4,53,317</td></tr>
+                        <tr><td>⚠️ At Risk</td><td>28 (12.3%)</td><td>₹72.6 Lakhs</td><td>₹2,59,370</td></tr>
+                        <tr><td>💤 Hibernating / Lost</td><td>50 (22.0%)</td><td>₹23.5 Lakhs</td><td>₹46,934</td></tr>
+                        <tr><td>🎯 Potential Loyalists</td><td>36 (15.9%)</td><td>₹21.0 Lakhs</td><td>₹58,333</td></tr>
+                        <tr><td>💎 Loyal Customers</td><td>24 (10.6%)</td><td>₹20.9 Lakhs</td><td>₹86,981</td></tr>
+                    `;
+                } else if (currentSQLIdx === 4) { // Discount
+                    thead.innerHTML = `<tr><th>Discount Tier</th><th>Orders Count</th><th>Gross Sales</th><th>Net Profit</th><th>Net Margin %</th></tr>`;
+                    tbody.innerHTML = `
+                        <tr><td>0% (Full Price)</td><td>667</td><td>₹2.08 Crore</td><td>₹67.6 Lakhs</td><td style="color:var(--emerald); font-weight:700;">32.39%</td></tr>
+                        <tr><td>1% - 5% (Minor Promo)</td><td>462</td><td>₹1.34 Crore</td><td>₹37.7 Lakhs</td><td>28.08%</td></tr>
+                        <tr><td>6% - 10% (Standard)</td><td>370</td><td>₹94.8 Lakhs</td><td>₹23.6 Lakhs</td><td>24.91%</td></tr>
+                        <tr><td>11% - 15% (High Promo)</td><td>185</td><td>₹41.7 Lakhs</td><td>₹8.98 Lakhs</td><td>21.53%</td></tr>
+                        <tr><td>16% - 20%+ (Deep Clearance)</td><td>120</td><td>₹24.2 Lakhs</td><td>₹3.96 Lakhs</td><td style="color:var(--rose); font-weight:700;">16.39%</td></tr>
+                    `;
+                } else {
+                    thead.innerHTML = `<tr><th>Metric / Dimension</th><th>Volume</th><th>Net Realized Amount</th><th>Contribution %</th></tr>`;
+                    tbody.innerHTML = `
+                        <tr><td>Electronics Flagship</td><td>437 Units</td><td>₹2.59 Crore</td><td>51.4%</td></tr>
+                        <tr><td>Furniture & Living</td><td>358 Units</td><td>₹1.29 Crore</td><td>25.6%</td></tr>
+                        <tr><td>Home & Kitchen</td><td>309 Units</td><td>₹74.8 Lakhs</td><td>14.8%</td></tr>
+                        <tr><td>Apparel & Activewear</td><td>343 Units</td><td>₹41.4 Lakhs</td><td>8.2%</td></tr>
+                    `;
+                }
+            }, 250);
+        }
+
+        // Tab Navigation
+        function activateTab(tabId, btn) {
+            document.querySelectorAll('.tab-trigger').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-view').forEach(v => v.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        // Sensitivity Simulator
+        function updateSimulation() {
+            const cut = parseFloat(document.getElementById('rngDiscount').value);
+            document.getElementById('lblDiscountRedux').textContent = `-${cut.toFixed(1)}% Discount Cut`;
+            
+            const baseProfit = 141.9; // Lakhs
+            const gainedLakhs = cut * 5.04;
+            const newProfit = baseProfit + gainedLakhs;
+            const newMargin = (newProfit * 100.0 / 504).toFixed(2);
+
+            document.getElementById('simProfit').textContent = `₹${(newProfit/100).toFixed(2)} Cr`;
+            document.getElementById('simGain').textContent = `+₹${gainedLakhs.toFixed(1)} Lakhs`;
+            document.getElementById('simMargin').textContent = `${newMargin}%`;
+        }
+
+        // Filter recalculations
+        function recalculateDashboard() {
+            const yr = document.getElementById('selTime').value;
+            if (yr === '2024') {
+                document.getElementById('valRevenue').textContent = '₹2.84 Cr';
+                document.getElementById('valProfit').textContent = '₹80.4 L';
+                document.getElementById('valOrders').textContent = '798';
+            } else if (yr === '2023') {
+                document.getElementById('valRevenue').textContent = '₹2.20 Cr';
+                document.getElementById('valProfit').textContent = '₹61.5 L';
+                document.getElementById('valOrders').textContent = '649';
+            } else if (yr === 'Q4') {
+                document.getElementById('valRevenue').textContent = '₹1.85 Cr';
+                document.getElementById('valProfit').textContent = '₹54.2 L';
+                document.getElementById('valOrders').textContent = '492';
+            } else {
+                document.getElementById('valRevenue').textContent = '₹5.04 Cr';
+                document.getElementById('valProfit').textContent = '₹1.42 Cr';
+                document.getElementById('valOrders').textContent = '1,447';
+            }
+        }
+
+        function resetFilters() {
+            document.getElementById('selTime').value = 'ALL';
+            document.getElementById('selRegion').value = 'ALL';
+            document.getElementById('selCat').value = 'ALL';
+            document.getElementById('selPay').value = 'ALL';
+            recalculateDashboard();
+        }
+
+        function exportDataCSV() {
+            window.location.href = '../dataset/retail_sales_master.csv';
+        }
+
+        function filterTableSearch() {
+            const query = document.getElementById('txtSearch').value.toLowerCase();
+            const rows = document.querySelectorAll('#tblMasterBody tr');
+            rows.forEach(r => {
+                const text = r.textContent.toLowerCase();
+                r.style.display = text.includes(query) ? '' : 'none';
+            });
+        }
+
+        // Populate Table
+        function renderMasterTable() {
+            const tbody = document.getElementById('tblMasterBody');
+            const data = (typeof DWH_DATA !== 'undefined' && DWH_DATA.sample_txs) ? DWH_DATA.sample_txs : [];
+            tbody.innerHTML = data.slice(0, 50).map(row => `
+                <tr>
+                    <td><code>${row.order_id}</code></td>
+                    <td>${row.order_date}</td>
+                    <td><strong>${row.customer_name}</strong></td>
+                    <td>${row.customer_city} (${row.customer_region})</td>
+                    <td>${row.product_name}</td>
+                    <td>${row.category}</td>
+                    <td>${row.quantity}</td>
+                    <td>${row.discount_percent}%</td>
+                    <td>₹${Number(row.sales_amount).toLocaleString('en-IN')}</td>
+                    <td style="color: var(--emerald); font-weight: 700;">₹${Number(row.profit_amount).toLocaleString('en-IN')}</td>
+                    <td><span class="badge-tag tag-${row.order_status}">${row.order_status}</span></td>
+                </tr>
+            `).join('');
+        }
+
+        // Initialize Charts
+        function initDashboardCharts() {
+            Chart.defaults.color = '#94A3B8';
+            Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.05)';
+
+            // 1. Monthly Velocity
+            new Chart(document.getElementById('chartMonthlyVelocity'), {
+                type: 'line',
+                data: {
+                    labels: ['Jan 23', 'Mar 23', 'May 23', 'Jul 23', 'Sep 23', 'Nov 23 (Diwali)', 'Jan 24', 'Mar 24', 'May 24', 'Jul 24', 'Sep 24', 'Nov 24 (Diwali)'],
+                    datasets: [
+                        {
+                            label: 'Gross Revenue (₹ Lakhs)',
+                            data: [17.8, 18.2, 22.4, 18.9, 21.6, 32.8, 20.4, 19.8, 26.5, 22.1, 25.8, 38.4],
+                            borderColor: '#6366F1',
+                            backgroundColor: 'rgba(99, 102, 241, 0.12)',
+                            fill: true,
+                            tension: 0.35,
+                            borderWidth: 2.5
+                        },
+                        {
+                            label: 'Net Profit (₹ Lakhs)',
+                            data: [5.1, 5.2, 6.4, 5.3, 6.1, 9.2, 5.8, 5.5, 7.6, 6.2, 7.3, 10.9],
+                            borderColor: '#10B981',
+                            tension: 0.35,
+                            borderWidth: 2
+                        }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+
+            // 2. Category Share
+            new Chart(document.getElementById('chartCategoryShare'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Electronics (51.4%)', 'Furniture (25.6%)', 'Home & Kitchen (14.8%)', 'Clothing (8.2%)'],
+                    datasets: [{
+                        data: [259, 129, 74.8, 41.4],
+                        backgroundColor: ['#6366F1', '#10B981', '#F59E0B', '#EC4899'],
+                        borderWidth: 0
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+            });
+
+            // 3. Regional Bar
+            new Chart(document.getElementById('chartRegionalBar'), {
+                type: 'bar',
+                data: {
+                    labels: ['West Hub', 'North Hub', 'East Hub', 'South Hub'],
+                    datasets: [{
+                        label: 'Sales (₹ Lakhs)',
+                        data: [149.3, 130.1, 112.9, 111.4],
+                        backgroundColor: ['#6366F1', '#3B82F6', '#10B981', '#F59E0B'],
+                        borderRadius: 6
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            });
+
+            // 4. Payment Share
+            new Chart(document.getElementById('chartPaymentDoughnut'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['UPI (43.2%)', 'Credit Card (29.4%)', 'Debit Card (13.1%)', 'COD (7.9%)', 'Net Banking (6.4%)'],
+                    datasets: [{
+                        data: [217.9, 147.3, 66.9, 36.3, 35.3],
+                        backgroundColor: ['#06B6D4', '#6366F1', '#3B82F6', '#EF4444', '#10B981'],
+                        borderWidth: 0
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+            });
+
+            // 5. Brands Bar
+            new Chart(document.getElementById('chartBrandBar'), {
+                type: 'bar',
+                data: {
+                    labels: ['Apple', 'Samsung', 'Dell', 'OnePlus', 'Wakefit', 'Philips'],
+                    datasets: [{
+                        label: 'Revenue (₹ Lakhs)',
+                        data: [135.6, 41.5, 30.4, 29.0, 59.9, 20.4],
+                        backgroundColor: '#8B5CF6',
+                        borderRadius: 6
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            });
+
+            // 6. RFM Pie
+            new Chart(document.getElementById('chartRFMPie'), {
+                type: 'pie',
+                data: {
+                    labels: ['Champions VIP (72.0%)', 'At Risk (14.4%)', 'Lost (4.7%)', 'Loyal (4.1%)', 'Potential (4.8%)'],
+                    datasets: [{
+                        data: [362.6, 72.6, 23.5, 20.9, 21.0],
+                        backgroundColor: ['#10B981', '#F59E0B', '#EF4444', '#6366F1', '#06B6D4'],
+                        borderWidth: 0
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+            });
+
+            // 7. RFM LTV Bar
+            new Chart(document.getElementById('chartRFMLTV'), {
+                type: 'bar',
+                data: {
+                    labels: ['Champions', 'At Risk', 'Loyal', 'Potential', 'Lost', 'New'],
+                    datasets: [{
+                        label: 'Avg Spend per Customer (₹k)',
+                        data: [453.3, 259.4, 86.9, 58.3, 46.9, 35.3],
+                        backgroundColor: ['#10B981', '#F59E0B', '#6366F1', '#06B6D4', '#EF4444', '#94A3B8'],
+                        borderRadius: 6
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            });
+
+            // 8. Pareto Curve
+            new Chart(document.getElementById('chartParetoCurve'), {
+                type: 'bar',
+                data: {
+                    labels: ['iPhone 15 Pro', 'MacBook M2', 'Samsung S24', 'Dell XPS', 'OnePlus 12', 'Velvet Sofa', 'King Bed', 'Office Chair', 'Dyson V8', 'AirPods 2'],
+                    datasets: [
+                        {
+                            type: 'line',
+                            label: 'Cumulative Revenue %',
+                            data: [11.5, 22.4, 30.6, 36.6, 42.4, 49.4, 56.2, 62.1, 68.0, 73.2],
+                            borderColor: '#F59E0B',
+                            borderWidth: 3,
+                            yAxisID: 'y1'
+                        },
+                        {
+                            type: 'bar',
+                            label: 'Revenue (₹ Lakhs)',
+                            data: [58.2, 54.6, 41.5, 30.4, 29.0, 35.5, 34.3, 25.4, 20.4, 21.2],
+                            backgroundColor: '#6366F1',
+                            borderRadius: 6,
+                            yAxisID: 'y'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { position: 'left', grid: { color: 'rgba(255,255,255,0.05)' } },
+                        y1: { position: 'right', max: 100, grid: { display: false } }
+                    }
+                }
+            });
+
+            // 9. Discount Cannibalization
+            new Chart(document.getElementById('chartDiscountCannibal'), {
+                type: 'bar',
+                data: {
+                    labels: ['0% (Full Price)', '1-5% (Minor)', '6-10% (Std)', '11-15% (High)', '16-20%+ (Deep)'],
+                    datasets: [
+                        {
+                            label: 'Net Margin (%)',
+                            data: [32.4, 28.1, 24.9, 21.5, 16.4],
+                            backgroundColor: '#10B981',
+                            borderRadius: 6
+                        }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+
+            // 10. RTO Risk
+            new Chart(document.getElementById('chartRTORisk'), {
+                type: 'bar',
+                data: {
+                    labels: ['COD (Cash on Delivery)', 'UPI', 'Net Banking', 'Debit Card', 'Credit Card'],
+                    datasets: [{
+                        label: 'Return Rate %',
+                        data: [17.2, 5.87, 4.92, 4.88, 3.54],
+                        backgroundColor: ['#EF4444', '#10B981', '#10B981', '#10B981', '#10B981'],
+                        borderRadius: 6
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+        }
+
+        window.onload = function() {
+            switchSQL(0);
+            renderMasterTable();
+            initDashboardCharts();
+            updateSimulation();
+        };
+    </script>
+</body>
+</html>

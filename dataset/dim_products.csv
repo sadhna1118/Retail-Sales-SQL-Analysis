@@ -1,0 +1,40 @@
+product_id,product_name,category,subcategory,unit_cost,unit_price,brand
+PRD_E01,MacBook Air M2,Electronics,Laptops,72000,94900,Apple
+PRD_E02,Dell XPS 13,Electronics,Laptops,65000,85000,Dell
+PRD_E03,HP Pavilion Gaming Laptop,Electronics,Laptops,48000,62000,HP
+PRD_E04,iPhone 15 Pro,Electronics,Smartphones,95000,124900,Apple
+PRD_E05,Samsung Galaxy S24,Electronics,Smartphones,60000,79999,Samsung
+PRD_E06,OnePlus 12,Electronics,Smartphones,45000,64999,OnePlus
+PRD_E07,Sony WH-1000XM5 Headphones,Electronics,Audio,20000,28990,Sony
+PRD_E08,Apple AirPods Pro 2,Electronics,Audio,16000,22900,Apple
+PRD_E09,boAt Rockerz 450,Electronics,Audio,800,1499,boAt
+PRD_E10,LG 27-inch 4K UHD Monitor,Electronics,Monitors,21000,28500,LG
+PRD_E11,Logitech MX Master 3S Mouse,Electronics,Accessories,6200,8995,Logitech
+PRD_E12,Logitech Mechanical Keyboard,Electronics,Accessories,4500,6495,Logitech
+PRD_E13,TP-Link AX3000 Wi-Fi 6 Router,Electronics,Networking,3200,4999,TP-Link
+PRD_E14,SanDisk 1TB Portable SSD,Electronics,Storage,6000,8499,SanDisk
+PRD_F01,Ergonomic Mesh Office Chair,Furniture,Chairs,7500,12999,Green Soul
+PRD_F02,Executive Leather Boss Chair,Furniture,Chairs,11000,18500,Featherlite
+PRD_F03,Motorized Standing Desk,Furniture,Desks,18000,26999,ErgoSmart
+PRD_F04,Solid Teak Wood Study Table,Furniture,Desks,9000,14500,Urban Ladder
+PRD_F05,3-Seater Velvet Fabric Sofa,Furniture,Living Room,22000,34999,Wakefit
+PRD_F06,L-Shape Sectional Luxury Sofa,Furniture,Living Room,34000,52000,Godrej Interio
+PRD_F07,King Size Engineered Wood Bed,Furniture,Bedroom,15000,24999,Wakefit
+PRD_F08,4-Door Wardrobe with Mirror,Furniture,Bedroom,16000,25500,Spacewood
+PRD_F09,6-Seater Solid Oak Dining Set,Furniture,Dining,24000,38000,Durian
+PRD_F10,Geometric Minimalist Bookshelf,Furniture,Storage,4500,7999,Home Centre
+PRD_C01,Men Slim Fit Formal Blazer,Clothing,Formal Wear,2600,5999,Raymond
+PRD_C02,Premium Egyptian Cotton Shirt,Clothing,Formal Wear,950,2499,Louis Philippe
+PRD_C03,Men Tapered Chinos,Clothing,Casual Wear,800,2199,Allen Solly
+PRD_C04,Women Silk Embroidered Kurta Set,Clothing,Ethnic Wear,1400,3899,Biba
+PRD_C05,Women Designer Georgette Saree,Clothing,Ethnic Wear,1800,4999,FabIndia
+PRD_C06,Men Stretch Denim Jeans,Clothing,Casual Wear,1100,2999,Levi's
+PRD_C07,Nike Air Zoom Pegasus Running Shoes,Clothing,Footwear,4200,8995,Nike
+PRD_C08,Puma UltraRide Sneakers,Clothing,Footwear,2200,4999,Puma
+PRD_C09,Athletic Dry-Fit Tracksuit,Clothing,Activewear,1200,3299,Under Armour
+PRD_C10,UV Protected Polarized Sunglasses,Clothing,Accessories,1100,3490,Ray-Ban
+PRD_H01,Philips Air Fryer XL 4.1L,Home & Kitchen,Appliances,4800,8495,Philips
+PRD_H02,Prestige 750W Mixer Grinder,Home & Kitchen,Appliances,2100,3890,Prestige
+PRD_H03,Instant Pot Duo 7-in-1 Cooker,Home & Kitchen,Appliances,5500,9999,Instant Pot
+PRD_H04,Dyson V8 Cordless Vacuum Cleaner,Home & Kitchen,Home Care,19000,29900,Dyson
+PRD_H05,Kent Grand Plus Water Purifier,Home & Kitchen,Appliances,9500,14999,Kent

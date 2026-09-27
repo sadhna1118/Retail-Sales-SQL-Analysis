@@ -1,0 +1,11 @@
+store_id,store_name,city,state,region,store_type,manager
+STR_101,Mumbai Flagship Store,Mumbai,Maharashtra,West,Flagship,Aarav Mehta
+STR_102,Pune Tech Hub Outlet,Pune,Maharashtra,West,Retail Outlet,Pooja Deshmukh
+STR_103,Delhi Connaught Hub,New Delhi,Delhi,North,Flagship,Vikram Malhotra
+STR_104,Noida Cyber Express,Noida,Uttar Pradesh,North,Express,Ritu Sharma
+STR_105,Bengaluru Indiranagar Mall,Bengaluru,Karnataka,South,Mall Outlet,Karthik Reddy
+STR_106,Hyderabad Hitech Outlet,Hyderabad,Telangana,South,Retail Outlet,Sneha Rao
+STR_107,Chennai Express Store,Chennai,Tamil Nadu,South,Express,Suresh Iyer
+STR_108,Kolkata Park Street Store,Kolkata,West Bengal,East,Flagship,Ananya Mukherjee
+STR_109,Patna Central Outlet,Patna,Bihar,East,Retail Outlet,Rajesh Verma
+STR_110,Ahmedabad SG Highway Store,Ahmedabad,Gujarat,West,Retail Outlet,Dhaval Patel
